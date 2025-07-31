@@ -1,0 +1,198 @@
+<!DOCTYPE html><!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>موقع حجز موعد عند طبيب في دنقلا</title>
+  <style>
+    body { font-family: Arial; direction: rtl; max-width: 800px; margin: auto; background: #f9f9f9; padding: 20px; }
+    .page { display: none; }
+    .active { display: block; }
+    nav { text-align: center; margin-bottom: 20px; }
+    nav button {
+      padding: 10px 20px;
+      margin: 5px;
+      background: #005bbb;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    h2 { color: #003366; text-align: center; }
+    form input, form select, form button, textarea {
+      width: 100%; padding: 10px; margin-top: 10px; border-radius: 5px; border: 1px solid #ccc;
+    }
+    form button { background: #005bbb; color: white; font-weight: bold; }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    th, td { border: 1px solid #aaa; padding: 8px; text-align: center; }
+    th { background: #005bbb; color: white; }
+    footer { margin-top: 30px; text-align: center; color: #666; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <button onclick="showPage('booking')">حجز موعد</button>
+  <button onclick="showPage('requests')">إدارة الطلبات</button>
+  <button onclick="showPage('status')">متابعة الرد</button>
+  <button onclick="showPage('doctors')">التخصصات والأطباء</button>
+</nav>
+
+<!-- صفحة 1: حجز الموعد -->
+<div id="booking" class="page active">
+  <h2>حجز موعد عند طبيب في دنقلا</h2>
+  <form id="bookingForm">
+    <input type="text" id="name" placeholder="الاسم الكامل" required />
+    <input type="tel" id="phone" placeholder="رقم الهاتف" required pattern="[0-9]{10,15}" />
+    <select id="hospital" required>
+      <option value="">اختر المستشفى</option>
+      <option>مستشفى دنقلا التعليمي</option>
+      <option>مستشفى السلام الخاص</option>
+      <option>مركز دنقلا الطبي</option>
+    </select>
+    <select id="specialty" required>
+      <option value="">اختر التخصص</option>
+      <option>باطنية</option>
+      <option>أطفال</option>
+      <option>جراحة</option>
+      <option>جلدية</option>
+      <option>نساء وتوليد</option>
+    </select>
+    <input type="date" id="date" required />
+    <input type="time" id="time" required />
+    <button type="submit">إرسال الطلب</button>
+  </form>
+</div>
+
+<!-- صفحة 2: صفحة المستلم (الرد على الطلبات) -->
+<div id="requests" class="page">
+  <h2>إدارة الطلبات</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>الاسم</th><th>الهاتف</th><th>المستشفى</th><th>التخصص</th><th>التاريخ</th><th>الوقت</th><th>رد</th><th>حفظ</th>
+      </tr>
+    </thead>
+    <tbody id="requestsBody"></tbody>
+  </table>
+</div>
+
+<!-- صفحة 3: متابعة الرد -->
+<div id="status" class="page">
+  <h2>متابعة حالة الحجز</h2>
+  <input type="tel" id="phoneCheck" placeholder="أدخل رقم الهاتف" />
+  <button onclick="checkStatus()">عرض الرد</button>
+  <div id="replyResult" style="margin-top: 20px; color: green; font-weight: bold;"></div>
+</div>
+
+<!-- صفحة 4: التخصصات والأطباء -->
+<div id="doctors" class="page">
+  <h2>الأطباء وأيام العمل</h2>
+  <table>
+    <thead>
+      <tr><th>التخصص</th><th>اسم الطبيب</th><th>أيام العمل</th><th>المواعيد</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>باطنية</td><td>د. أحمد علي</td><td>الأحد - الثلاثاء - الخميس</td><td>8 صباحاً - 1 ظهراً</td></tr>
+      <tr><td>أطفال</td><td>د. سارة محمد</td><td>الاثنين - الأربعاء</td><td>9 صباحاً - 2 ظهراً</td></tr>
+      <tr><td>جراحة</td><td>د. محمد حسن</td><td>الثلاثاء - الخميس</td><td>10 صباحاً - 3 عصراً</td></tr>
+      <tr><td>جلدية</td><td>د. ندى عبد الله</td><td>السبت - الأحد</td><td>11 صباحاً - 2 ظهراً</td></tr>
+      <tr><td>نساء وتوليد</td><td>د. فاطمة عبد الرحمن</td><td>الأربعاء - الجمعة</td><td>9 صباحاً - 1 ظهراً</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- صفحة 5: صفحة الشكر -->
+<div id="thankyou" class="page">
+  <h2>شكراً لاستخدامك الموقع</h2>
+  <p>تم استلام طلبك بنجاح وسيتم التواصل معك قريباً.</p>
+  <button onclick="showPage('booking')">عودة للحجز</button>
+</div>
+
+<footer>تم التصميم بواسطة المهندسة ميساء محمد</footer>
+
+<script>
+  function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(div => div.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+    if (pageId === 'requests') loadRequests();
+  }
+
+  // تخزين الطلب
+  document.getElementById('bookingForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const booking = {
+      name: document.getElementById('name').value,
+      phone: document.getElementById('phone').value,
+      hospital: document.getElementById('hospital').value,
+      specialty: document.getElementById('specialty').value,
+      date: document.getElementById('date').value,
+      time: document.getElementById('time').value,
+      reply: ''
+    };
+    let bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+    bookings.push(booking);
+    localStorage.setItem('bookings', JSON.stringify(bookings));
+    showPage('thankyou');
+    this.reset();
+  });
+
+  // عرض الطلبات للمستلم
+  function loadRequests() {
+    let tbody = document.getElementById('requestsBody');
+    tbody.innerHTML = '';
+    let bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+    bookings.forEach((b, i) => {
+      let row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${b.name}</td>
+        <td>${b.phone}</td>
+        <td>${b.hospital}</td>
+        <td>${b.specialty}</td>
+        <td>${b.date}</td>
+        <td>${b.time}</td>
+        <td><textarea id="reply_${i}">${b.reply}</textarea></td>
+        <td><button onclick="saveReply(${i})">💾</button></td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  // حفظ الرد
+  function saveReply(index) {
+    let bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+    let reply = document.getElementById(`reply_${index}`).value;
+    bookings[index].reply = reply;
+    localStorage.setItem('bookings', JSON.stringify(bookings));
+    alert("تم حفظ الرد.");
+  }
+
+  // متابعة حالة الحجز
+  function checkStatus() {
+    let phone = document.getElementById('phoneCheck').value.trim();
+    let bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+    let found = bookings.find(b => b.phone === phone);
+    let replyDiv = document.getElementById('replyResult');
+    if (found) {
+      replyDiv.textContent = found.reply ? "الرد: " + found.reply : "لم يتم الرد بعد.";
+    } else {
+      replyDiv.textContent = "لا يوجد حجز بهذا الرقم.";
+    }
+  }
+</script>
+
+</body>
+</html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+</head>
+
+<body>
+  
+</body>
+
+</html>
